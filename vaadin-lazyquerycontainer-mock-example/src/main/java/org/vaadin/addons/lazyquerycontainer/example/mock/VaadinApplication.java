@@ -22,7 +22,7 @@ import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Runo;
+import com.vaadin.v7.ui.themes.Runo;
 import org.vaadin.addons.lazyquerycontainer.*;
 
 import java.util.ArrayList;
