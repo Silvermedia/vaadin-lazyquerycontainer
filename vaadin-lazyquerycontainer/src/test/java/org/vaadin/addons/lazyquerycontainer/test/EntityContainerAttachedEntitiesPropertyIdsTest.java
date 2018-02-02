@@ -16,18 +16,13 @@
 package org.vaadin.addons.lazyquerycontainer.test;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.addons.lazyquerycontainer.LazyEntityContainer;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
-import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
-import org.vaadin.addons.lazyquerycontainer.QueryItemStatus;
+import org.vaadin.addons.lazyquerycontainer.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -99,6 +94,7 @@ public class EntityContainerAttachedEntitiesPropertyIdsTest {
         final Author author = new Author();
         author.setName("test-author");
         author.setCompany(company);
+        author.setValid(true);
 
         final Task taskAlpha = entityContainer.addEntity();
         taskAlpha.setName("alpha");
@@ -139,6 +135,7 @@ public class EntityContainerAttachedEntitiesPropertyIdsTest {
 
         Assert.assertEquals("Verify entity alpha is in container", 1, entityContainer.size());
         Assert.assertEquals("Verify entity alpha is same", taskAlpha, entityContainer.getEntity(0));
+        final Item item = entityContainer.getItem(entityContainer.getIdByIndex(0));
 
         entityContainer.removeAllContainerFilters();
 
@@ -168,6 +165,7 @@ public class EntityContainerAttachedEntitiesPropertyIdsTest {
 
         entityContainer.addContainerProperty("description", String.class, "");
         entityContainer.addContainerProperty("author.name", String.class, "");
+        entityContainer.addContainerProperty("author.valid", Boolean.class, false);
         entityContainer.addContainerProperty("author.company.name", String.class, "");
         entityContainer.refresh();
 
@@ -178,6 +176,8 @@ public class EntityContainerAttachedEntitiesPropertyIdsTest {
 
         Assert.assertEquals("Verify new property has correct value.",
                 "test-author", betaItem.getItemProperty("author.name").getValue());
+        Assert.assertTrue("Verify valid property is true ",
+                ((Boolean) betaItem.getItemProperty("author.valid").getValue()).booleanValue());
         Assert.assertEquals("Verify new property has correct value.",
                 "test-company", betaItem.getItemProperty("author.company.name").getValue());
 

@@ -22,11 +22,7 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import junit.framework.TestCase;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
-import org.vaadin.addons.lazyquerycontainer.QueryItemStatus;
-import org.vaadin.addons.lazyquerycontainer.QueryView;
+import org.vaadin.addons.lazyquerycontainer.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -58,8 +54,8 @@ public class LazyQueryContainerTest extends TestCase implements ItemSetChangeLis
         factory.setQueryDefinition(definition);
         QueryView view = new LazyQueryView(definition, factory);
         container = new LazyQueryContainer(view);
-        container.addListener((ItemSetChangeListener) this);
-        container.addListener((PropertySetChangeListener) this);
+        container.addItemSetChangeListener(this);
+        container.addPropertySetChangeListener(this);
     }
 
     protected void tearDown() throws Exception {

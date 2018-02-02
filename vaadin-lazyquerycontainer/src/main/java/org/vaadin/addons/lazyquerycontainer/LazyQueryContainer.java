@@ -15,16 +15,13 @@
  */
 package org.vaadin.addons.lazyquerycontainer;
 
-import com.vaadin.data.Buffered;
-import com.vaadin.data.Container;
+import com.vaadin.data.*;
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Container.ItemSetChangeNotifier;
 import com.vaadin.data.Container.PropertySetChangeNotifier;
 import com.vaadin.data.Container.Sortable;
-import com.vaadin.data.ContainerHelpers;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +35,7 @@ import java.util.List;
  * @author Tommi S.E. Laukkanen
  */
 public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotifier, PropertySetChangeNotifier,
-        Buffered, Container.Filterable {
+        Buffered, Container.Filterable, Serializable {
     /**
      * Java serialization UID.
      */
@@ -101,6 +98,7 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
      */
     public final void sort(final Object[] sortPropertyIds, final boolean[] ascendingStates) {
         queryView.sort(sortPropertyIds, ascendingStates);
+        notifyItemSetChanged();
     }
 
     /**
@@ -202,7 +200,9 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
         if (itemId == null) {
             return null;
         } else {
-            return queryView.getItem(queryView.getItemIdList().indexOf(itemId));
+            int index = queryView.getItemIdList().indexOf(itemId);
+            if (index == -1) return null;
+            return queryView.getItem(index);
         }
     }
 
@@ -214,7 +214,9 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
      * @return the property corresponding to given IDs.
      */
     public final Property getContainerProperty(final Object itemId, final Object propertyId) {
-        return getItem(itemId).getItemProperty(propertyId);
+        final Item item = getItem(itemId);
+        if (item == null) return null;
+        return item.getItemProperty(propertyId);
     }
 
     /**
@@ -492,16 +494,19 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
     @Override
     public final void addContainerFilter(final Filter filter) {
         getQueryView().addFilter(filter);
+        notifyItemSetChanged();
     }
 
     @Override
     public final void removeContainerFilter(final Filter filter) {
         getQueryView().removeFilter(filter);
+        notifyItemSetChanged();
     }
 
     @Override
     public final void removeAllContainerFilters() {
         getQueryView().removeFilters();
+        notifyItemSetChanged();
     }
 
     @Override
@@ -515,6 +520,7 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
      */
     public final void addDefaultFilter(final Filter filter) {
         getQueryView().getQueryDefinition().addDefaultFilter(filter);
+        notifyItemSetChanged();
     }
 
     /**
@@ -523,6 +529,7 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
      */
     public final void removeDefaultFilter(final Filter filter) {
         getQueryView().getQueryDefinition().removeDefaultFilter(filter);
+        notifyItemSetChanged();
     }
 
     /**
@@ -530,6 +537,7 @@ public class LazyQueryContainer implements Indexed, Sortable, ItemSetChangeNotif
      */
     public final void removeDefaultFilters() {
         getQueryView().getQueryDefinition().removeDefaultFilters();
+        notifyItemSetChanged();
     }
 
     /**

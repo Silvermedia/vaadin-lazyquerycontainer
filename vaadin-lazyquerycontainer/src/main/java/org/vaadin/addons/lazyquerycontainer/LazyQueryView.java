@@ -22,6 +22,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Property.ValueChangeNotifier;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -30,14 +31,13 @@ import java.util.*;
  * properties which will be filled with debug information when they exist in
  * query definition. The debug property IDs are defined as string constants with
  * the following naming convention: DEBUG_PROPERTY_XXXX.
- * <p/>
  * LazyQueryView implements mainly batch loading, caching and debug
  * functionalities. When data is sorted old query is discarded and new
  * constructed with QueryFactory and new sort state.
  *
  * @author Tommi S.E. Laukkanen
  */
-public final class LazyQueryView implements QueryView, ValueChangeListener {
+public final class LazyQueryView implements QueryView, ValueChangeListener, Serializable {
     /**
      * Java serialization UID.
      */
@@ -190,7 +190,7 @@ public final class LazyQueryView implements QueryView, ValueChangeListener {
         for (final Property property : propertyItemMapCache.keySet()) {
             if (property instanceof ValueChangeNotifier) {
                 final ValueChangeNotifier notifier = (ValueChangeNotifier) property;
-                notifier.removeListener(this);
+                notifier.removeValueChangeListener(this);
             }
         }
 
@@ -333,7 +333,7 @@ public final class LazyQueryView implements QueryView, ValueChangeListener {
                 final Property property = item.getItemProperty(propertyId);
                 if (property instanceof ValueChangeNotifier) {
                     final ValueChangeNotifier notifier = (ValueChangeNotifier) property;
-                    notifier.addListener(this);
+                    notifier.addValueChangeListener(this);
                     propertyItemMapCache.put(property, item);
                 }
             }
@@ -359,7 +359,7 @@ public final class LazyQueryView implements QueryView, ValueChangeListener {
                     final Property property = firstItem.getItemProperty(propertyId);
                     if (property instanceof ValueChangeNotifier) {
                         final ValueChangeNotifier notifier = (ValueChangeNotifier) property;
-                        notifier.removeListener(this);
+                        notifier.removeValueChangeListener(this);
                         propertyItemMapCache.remove(property);
                     }
                 }

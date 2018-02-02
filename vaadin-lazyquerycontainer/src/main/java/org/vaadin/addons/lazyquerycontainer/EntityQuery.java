@@ -19,24 +19,10 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Between;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.data.util.filter.IsNull;
-import com.vaadin.data.util.filter.Like;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.Not;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import org.apache.log4j.Logger;
+import com.vaadin.data.util.filter.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -57,8 +43,6 @@ public class EntityQuery<E> implements Query, Serializable {
      * Java serialization version UID.
      */
     private static final long serialVersionUID = 1L;
-    /** The logger. */
-    private static final Logger LOGGER = Logger.getLogger(EntityQuery.class);
     /**
      * The JPA EntityManager.
      */
@@ -127,7 +111,6 @@ public class EntityQuery<E> implements Query, Serializable {
 
         if (querySize == -1) {
             if (queryDefinition.getBatchSize() == 0) {
-                LOGGER.debug(entityClass.getName() + " size skipped due to 0 bath size.");
                 return 0;
             }
 
@@ -139,13 +122,9 @@ public class EntityQuery<E> implements Query, Serializable {
 
             setWhereCriteria(cb, cq, root);
 
-            //setOrderClause(cb, cq, root);
-
             final javax.persistence.Query query = entityManager.createQuery(cq);
 
             querySize = ((Number) query.getSingleResult()).intValue();
-
-            LOGGER.debug(entityClass.getName() + " container size: " + querySize);
         }
         return querySize;
     }
@@ -338,13 +317,15 @@ public class EntityQuery<E> implements Query, Serializable {
             }
         }
 
-        if (filter instanceof SimpleStringFilter) {
+       if (filter instanceof SimpleStringFilter) {
             final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
-            final Expression<String> property = (Expression) getPropertyPath(
-                    root, simpleStringFilter.getPropertyId());
-            return cb.like(property, "%"
-                    + simpleStringFilter.getFilterString() + "%");
-        }
+            final Expression<String> property = (Expression) getPropertyPath(root, simpleStringFilter.getPropertyId());
+            if (simpleStringFilter.isIgnoreCase()) {
+                return cb.like(cb.lower(property), "%" + simpleStringFilter.getFilterString() + "%");
+            } else {
+                return cb.like(property, "%" + simpleStringFilter.getFilterString() + "%");
+            }
+        } 
 
         throw new UnsupportedOperationException("Vaadin filter: " + filter.getClass().getName() + " is not supported.");
     }

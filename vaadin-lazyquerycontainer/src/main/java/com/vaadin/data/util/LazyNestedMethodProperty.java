@@ -16,15 +16,16 @@
  */
 package com.vaadin.data.util;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.util.MethodProperty.MethodException;
+import com.vaadin.util.ReflectTools;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.vaadin.data.Property;
-import com.vaadin.data.util.MethodProperty.MethodException;
 
 /**
  * Nested accessor based property for a bean.
@@ -41,7 +42,7 @@ import com.vaadin.data.util.MethodProperty.MethodException;
  *
  * @since 6.6
  */
-public final class LazyNestedMethodProperty<T> extends AbstractProperty<T> {
+public class LazyNestedMethodProperty<T> extends AbstractProperty<T> {
 
     /** The property name. */
     private String propertyName;
@@ -181,7 +182,7 @@ public final class LazyNestedMethodProperty<T> extends AbstractProperty<T> {
         } catch (final NoSuchMethodException skipped) {
         }
 
-        this.type = (Class<? extends T>) MethodProperty
+        this.type = (Class<? extends T>) ReflectTools
                 .convertPrimitiveType(type);
         this.propertyName = propertyName;
         this.getMethods = getMethods;
@@ -245,7 +246,7 @@ public final class LazyNestedMethodProperty<T> extends AbstractProperty<T> {
      * Internal method to actually call the setter method of the wrapped
      * property.
      *
-     * @param value
+     * @param value the value
      */
     protected void invokeSetMethod(final T value) {
         try {

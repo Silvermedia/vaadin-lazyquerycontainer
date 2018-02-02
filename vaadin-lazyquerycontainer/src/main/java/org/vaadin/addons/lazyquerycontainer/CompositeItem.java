@@ -19,12 +19,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.PropertysetItem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * CompositeItem enables joining multiple items as single item. CompositeItem
@@ -33,7 +29,7 @@ import java.util.Map;
  *
  * @author Tommi Laukkanen
  */
-public final class CompositeItem implements Item {
+public final class CompositeItem implements Item, Serializable {
     /**
      * Serial version UID for this class.
      */
